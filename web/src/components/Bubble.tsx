@@ -15,7 +15,7 @@ function Bubble({ children }: { children: React.ReactNode }) {
   }, [])
 
     return (
-      <div ref={popoverRef} className={`absolute z-10 ${arrowTop ? 'top-[calc(50%+20px)]' : 'bottom-[calc(50%+20px)]'} w-80 h-48 bg-green-950 border border-solid rounded-lg cursor-default`}>
+      <div ref={popoverRef} className={`absolute z-10 ${arrowTop ? 'top-[calc(50%+20px)]' : 'bottom-[calc(50%+20px)]'} w-80 h-50 bg-green-950 border border-solid rounded-lg cursor-default`}>
         <div className="relative w-full h-full flex items-center justify-center p-4">
           {children}
           {arrowTop ?

@@ -1,9 +1,10 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { useMutation, useLazyQuery } from '@apollo/client'
-import { GET_USER, ADD_USER } from '../graphql/ queries'
+import { GET_USER, ADD_USER } from '../graphql/queries'
 
 export interface User {
   username: string;
+  id?: string;
 }
 
 interface AuthContext {
@@ -23,9 +24,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const user = JSON.parse(storedUser)
       getUser({ variables: { username: user.username } })
         .then(res => {
-          if (res.data?.userByUsername) {
-            console.log(res.data?.userByUsername)
-            setUser(JSON.parse(storedUser));
+          const resUser = res.data?.userByUsername
+          if (resUser) {
+            setUser({
+              username: resUser.username,
+              id: resUser.id
+            })
           } else {
             localStorage.removeItem('user');
           } 
@@ -39,7 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (user: User): Promise<void> => {
     return getUser({ variables: { username: user.username } })
       .then(res => {
-        console.log(res.data)
         if (!res.data?.userByUsername) {
           return addUser({ variables: { username: user.username } })
         }

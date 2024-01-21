@@ -3,6 +3,7 @@ import { ClickedCellContext } from "../context/ClickedCellContext";
 import Bubble from "./Bubble";
 import Login from "./Login";
 import { useAuth } from "../hooks/useAuth";
+import AddChat from "./AddChat";
 
 interface CellProps {
   id: string;
@@ -14,17 +15,16 @@ function Cell ({ id, children }: CellProps) {
   const { user } = useAuth()
   function clickHandler (ev: React.MouseEvent<HTMLDivElement>) {
     ev.stopPropagation();
-    console.log(id);
     setClickedCell(id);
   }
 
-  const chat = null
+  const chat = true
 
   function bubbleContent () {
     if (!user) {
       return <Login />
     } if (chat) {
-      return chat
+      return <AddChat id={id} />
     } else {
       return 'test'
     }

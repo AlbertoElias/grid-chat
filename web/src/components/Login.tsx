@@ -16,8 +16,6 @@ const Login = () => {
     if (inputValue) {
       login({
         username: inputValue
-      }).catch(err => {
-        console.log(err)
       })
     }
   }
@@ -37,7 +35,6 @@ const Login = () => {
             placeholder="Username"
             onChange={handleInputChange}
           />
-
           <span
             className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-green-950 p-0.5 text-xs text-white transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs"
           >

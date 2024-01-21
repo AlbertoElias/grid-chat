@@ -4,6 +4,7 @@ export const GET_USER = gql`
   query userByUsername ($username: String!) {
     userByUsername (username: $username) {
       username
+      id
       chats {
         id
         content
@@ -17,6 +18,7 @@ export const ADD_USER = gql`
   mutation addUser ($username: String!) {
     addUser (username: $username) {
       username
+      id
     }
   }
 `
@@ -28,6 +30,21 @@ export const GET_CHATS = gql`
       content
       author {
         username
+        id
+      }
+      createdAt
+    }
+  }
+`
+
+export const ADD_CHAT = gql`
+  mutation addChat ($content: String!, $author: String!, $id: String!) {
+    addChat (content: $content, author: $author, id: $id) {
+      id
+      content
+      author {
+        username
+        id
       }
       createdAt
     }
