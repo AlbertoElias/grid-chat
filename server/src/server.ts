@@ -18,7 +18,8 @@ const resolvers: Resolvers = {
     chats: async () => await Chat.find(),
     chat: async (_, args) => await Chat.findOne({ where: { id: args.id } }),
     users: async () => await User.find(),
-    user: async (_, args) => await User.findOne({ where: { id: args.id } })
+    user: async (_, args) => await User.findOne({ where: { id: args.id } }),
+    userByUsername: async (_, args) => await User.findOne({ where: { username: args.username } })
   },
   User: {
     chats: async (parent) => {

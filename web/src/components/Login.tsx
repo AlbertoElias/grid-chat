@@ -16,6 +16,8 @@ const Login = () => {
     if (inputValue) {
       login({
         username: inputValue
+      }).catch(err => {
+        console.log(err)
       })
     }
   }

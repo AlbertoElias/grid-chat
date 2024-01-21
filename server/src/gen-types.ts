@@ -54,6 +54,7 @@ export type Query = {
   chat?: Maybe<Chat>;
   chats?: Maybe<Array<Maybe<Chat>>>;
   user?: Maybe<User>;
+  userByUsername?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -65,6 +66,11 @@ export type QueryChatArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryUserByUsernameArgs = {
+  username: Scalars['String']['input'];
 };
 
 export type User = {
@@ -196,6 +202,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   chat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryChatArgs, 'id'>>;
   chats?: Resolver<Maybe<Array<Maybe<ResolversTypes['Chat']>>>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  userByUsername?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByUsernameArgs, 'username'>>;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
 };
 
