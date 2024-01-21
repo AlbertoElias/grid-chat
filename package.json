@@ -1,0 +1,21 @@
+{
+  "name": "grid-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "scripts": {
+    "bootstrap": "lerna link && lerna bootstrap"
+  },
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "lerna": "^4.0.0",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2"
+  }
+}

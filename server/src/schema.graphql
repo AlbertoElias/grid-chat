@@ -1,0 +1,39 @@
+scalar DateTime
+
+type Chat {
+  id: String!
+  content: String!
+  author: User!
+  createdAt: DateTime!
+}
+
+input ChatInput {
+  id: String!
+  content: String!
+  author: UserInput!
+}
+
+type User {
+  id: ID!
+  username: String!
+  chats: [Chat]
+}
+
+input UserInput {
+  username: String!
+}
+
+# The "Query" type is special: it lists all of the available queries that
+# clients can execute, along with the return type for each. In this
+# case, the "books" query returns an array of zero or more Books (defined above).
+type Query {
+  chats: [Chat]
+  chat(id: ID!): Chat
+  users: [User]
+  user(id: ID!): User
+}
+
+type Mutation {
+  addUser(username: String!): User
+  addChat(id: String!, content: String!, author: String!): Chat
+}
