@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useRef } from 'react'
 
-function Bubble({ children }: { children: React.ReactNode }) {
+const Bubble = ({ children }: { children: React.ReactNode }) => {
   const [arrowTop, setArrowTop] = useState(false)
   const popoverRef = useRef(null)
 

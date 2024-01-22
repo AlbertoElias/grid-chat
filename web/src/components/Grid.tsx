@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect, MouseEvent } from 'react';
 import Canvas from './Canvas'
 import Cell from './Cell'
-import { ClickedCellContext } from '../context/ClickedCellContext';
 
 function Grid () {
   const [clickedCell, setClickedCell] = useState<string | null>(null)
@@ -79,6 +78,10 @@ function Grid () {
     return () => clearTimeout(timeout);
   }, [])
 
+  function cellClickHandler (id: string) {
+    setClickedCell(id);
+  }
+
   const horizontalCells = 100
   const verticalCells = 100
 
@@ -88,7 +91,7 @@ function Grid () {
     const row = []
     for (let j = 0; j < verticalCells; j++) {
       const id = `${i},${j}`
-      row.push(<Cell id={id} key={id}></Cell>)
+      row.push(<Cell id={id} key={id} onClick={cellClickHandler} clickedCell={clickedCell === id}></Cell>)
     }
     rows.push(<div className='flex' key={`row-${i}`}>{row}</div>)
   }
@@ -96,9 +99,7 @@ function Grid () {
   return (
     <div className='p-4 flex-1 flex justify-center overflow-hidden'>
       <div className='relative overflow-scroll no-scrollbar h-full' ref={gridWrapperRef} onMouseDown={handleDragStart} onMouseUp={handleDragEnd} onMouseMove={handleDrag}>
-        <ClickedCellContext.Provider value={{ clickedCell, setClickedCell }}>
-          <div className='flex flex-col absolute' ref={gridRef}>{rows}</div>
-        </ClickedCellContext.Provider>
+        <div className='flex flex-col absolute' ref={gridRef}>{rows}</div>
         <Canvas width={canvasSize.width} height={canvasSize.height} />
       </div>
     </div>
