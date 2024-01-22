@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect, MouseEvent, useContext } from 'react';
+import { useRef, useState, useEffect, MouseEvent } from 'react';
 import Canvas from './Canvas'
 import Cell from './Cell'
-import { ChatsContext } from '../context/ChatsContext';
+import { useChats } from '../hooks/useChats';
 
 function Grid () {
-  const { chats } = useContext(ChatsContext) || {};
+  const { chats } = useChats()
   const [clickedCell, setClickedCell] = useState<string | null>(null)
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);

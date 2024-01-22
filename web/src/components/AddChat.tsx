@@ -1,8 +1,7 @@
-import { useMutation } from "@apollo/client";
 import { ChangeEvent, useRef, useState } from "react";
 import Button from "./Button";
-import { ADD_CHAT } from "../graphql/queries";
 import { useAuth } from "../hooks/useAuth";
+import { useChats } from "../hooks/useChats";
 
 interface AddChatProps {
   id: string;
@@ -10,8 +9,8 @@ interface AddChatProps {
 
 function AddChat ({ id }: AddChatProps) {
   const { user } = useAuth()
+  const { addChat } = useChats();
   const [inputValue, setInputValue] = useState<string>('')
-  const [addChat] = useMutation(ADD_CHAT)
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -23,12 +22,10 @@ function AddChat ({ id }: AddChatProps) {
     ev.preventDefault()
     if (inputValue && user) {
       addChat({
-        variables: {
-          content: inputValue,
-          author: user.id,
-          id
-        }
-      }).then(_ => {
+        content: inputValue,
+        author: user,
+        id
+      }).then((_: any) => {
         setInputValue('')
         if (textareaRef.current) textareaRef.current.value = ''
       })

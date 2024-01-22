@@ -10,7 +10,7 @@ export interface User {
 
 interface AuthContext {
   user: User | null;
-  login: (user: User) => void;
+  login: (user: User) => Promise<void>;
   logout: () => void;
 }
 
@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             })
           } else {
             localStorage.removeItem('user');
-          } 
+          }
         })
     }
   }, []);
