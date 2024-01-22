@@ -5,6 +5,7 @@ import { GET_USER, ADD_USER } from '../graphql/queries'
 export interface User {
   username: string;
   id?: string;
+  __typename?: string;
 }
 
 interface AuthContext {

@@ -1,13 +1,17 @@
 import Grid from './components/Grid';
 import Header from './components/Header';
 import { AuthProvider } from './context/AuthContext';
+import { ChatsProvider } from './context/ChatsContext';
 
 function App() {
+
   return (
     <AuthProvider>
       <>
         <Header />
-        <Grid />
+        <ChatsProvider>
+          <Grid  />
+        </ChatsProvider>
       </>
     </AuthProvider>
   );

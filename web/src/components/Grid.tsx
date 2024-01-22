@@ -1,8 +1,10 @@
-import { useRef, useState, useEffect, MouseEvent } from 'react';
+import { useRef, useState, useEffect, MouseEvent, useContext } from 'react';
 import Canvas from './Canvas'
 import Cell from './Cell'
+import { ChatsContext } from '../context/ChatsContext';
 
 function Grid () {
+  const { chats } = useContext(ChatsContext) || {};
   const [clickedCell, setClickedCell] = useState<string | null>(null)
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -91,7 +93,17 @@ function Grid () {
     const row = []
     for (let j = 0; j < verticalCells; j++) {
       const id = `${i},${j}`
-      row.push(<Cell id={id} key={id} onClick={cellClickHandler} clickedCell={clickedCell === id}></Cell>)
+      const c = chats?.get(id)
+      if (c) console.log(c)
+      row.push(
+        <Cell
+          id={id}
+          key={id}
+          onClick={cellClickHandler}
+          clickedCell={clickedCell === id}
+          chat={chats?.get(id)}
+        ></Cell>
+      )
     }
     rows.push(<div className='flex' key={`row-${i}`}>{row}</div>)
   }

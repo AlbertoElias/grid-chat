@@ -15,7 +15,7 @@ const typeDefs = readFileSync('./src/schema.graphql', { encoding: 'utf-8' })
 const resolvers: Resolvers = {
   DateTime: DateTimeResolver,
   Query: {
-    chats: async () => await Chat.find(),
+    chats: async () => await Chat.find( { relations: ['author'] }),
     chat: async (_, args) => await Chat.findOne({ where: { id: args.id } }),
     users: async () => await User.find(),
     user: async (_, args) => await User.findOne({ where: { id: args.id } }),
@@ -23,9 +23,8 @@ const resolvers: Resolvers = {
   },
   User: {
     chats: async (parent) => {
-      console.log(parent)
       const author = await User.findOne({ where: { id: parent.id } })
-      if (author == null) throw new Error('Author not found')
+      if (author === null) throw new Error('Author not found')
       return await Chat.find({ where: { author } })
     }
   },
@@ -35,7 +34,7 @@ const resolvers: Resolvers = {
       if (!args.author) throw new Error('Author is required')
       if (!args.id) throw new Error('Id is required')
       const author = await User.findOne({ where: { id: args.author } })
-      if (author == null) throw new Error('Author not found')
+      if (!author) throw new Error('Author not found')
       try {
         const chat = Chat.create({
           id: args.id,

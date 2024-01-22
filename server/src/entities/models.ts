@@ -18,7 +18,7 @@ export class Chat extends BaseEntity {
     id: string
 
   @ManyToOne(() => User, user => user.chats)
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'author' })
     author: User
 
   @Column({ type: 'text' })

@@ -7,20 +7,10 @@ type Chat {
   createdAt: DateTime!
 }
 
-input ChatInput {
-  id: String!
-  content: String!
-  author: UserInput!
-}
-
 type User {
   id: ID!
   username: String!
   chats: [Chat]
-}
-
-input UserInput {
-  username: String!
 }
 
 # The "Query" type is special: it lists all of the available queries that
