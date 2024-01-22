@@ -33,22 +33,19 @@ function AddChat ({ id }: AddChatProps) {
   }
 
   return (
-    <div className='flex flex-col w-full h-full'>
-      <h2 className='text-xl sm:text-2xl text-white mb-4'>Post</h2>
-      <form
-        className='flex flex-col justify-between w-full h-full'
-        onSubmit={handleChatSubmit}
-      >
-        <textarea
-          id="chat"
-          className="w-full mb-2 p-2 flex-1 resize-none border-x-0 border-t-0 border-gray-200 align-top sm:text-sm"
-          placeholder="Enter any additional order notes..."
-          onChange={handleInputChange}
-          ref={textareaRef}
-        ></textarea>
-        <Button onClick={handleChatSubmit} disabled={!inputValue}>Add Chat</Button>
-      </form>
-    </div>
+    <form
+      className='flex flex-col justify-between w-full h-full'
+      onSubmit={handleChatSubmit}
+    >
+      <textarea
+        id="chat"
+        className="w-full mb-2 p-2 flex-1 resize-none bg-transparent placeholder-slate-700 text-white border-gray-200 rounded-md align-top sm:text-sm focus-within:border-teal-300 focus-within:ring-1 focus-within:ring-teal-300"
+        placeholder="Write a message..."
+        onChange={handleInputChange}
+        ref={textareaRef}
+      ></textarea>
+      <Button onClick={handleChatSubmit} disabled={!inputValue}>Add Chat Here</Button>
+    </form>
   );
 }
 
