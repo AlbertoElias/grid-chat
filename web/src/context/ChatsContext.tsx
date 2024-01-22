@@ -32,6 +32,7 @@ export const ChatsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [data])
 
   const storeChat = async (chat: Chat): Promise<void> => {
+    console.log(chat)
     return addChat({
       variables: {
         content: chat.content,

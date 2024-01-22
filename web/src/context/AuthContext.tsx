@@ -22,15 +22,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      const user = JSON.parse(storedUser)
-      getUser({ variables: { username: user.username } })
+      const parsedUser = JSON.parse(storedUser)
+      getUser({ variables: { username: parsedUser.username } })
         .then(res => {
           const resUser = res.data?.userByUsername
           if (resUser) {
+            console.log(resUser)
             setUser({
               username: resUser.username,
               id: resUser.id
             })
+            console.log(user)
           } else {
             localStorage.removeItem('user');
           }
@@ -41,17 +43,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [addUser] = useMutation(ADD_USER)
   const [getUser] = useLazyQuery(GET_USER)
 
-  const login = async (user: User): Promise<void> => {
-    return getUser({ variables: { username: user.username } })
+  const login = async (userData: User): Promise<void> => {
+    return getUser({ variables: { username: userData.username } })
       .then(res => {
+        console.log(res.data)
         if (!res.data?.userByUsername) {
-          return addUser({ variables: { username: user.username } })
+          return addUser({ variables: { username: userData.username } })
         }
         return res
       })
-      .then(_ => {
-        setUser(user);
-        localStorage.setItem('user', JSON.stringify(user))
+      .then(res => {
+        console.log(res)
+        setUser({
+          username: res.data?.userByUsername.username,
+          id: res.data?.userByUsername.id
+        });
+        console.log(user)
+        localStorage.setItem('user', JSON.stringify(userData))
       })
   };
 

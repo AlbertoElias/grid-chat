@@ -84,6 +84,15 @@ function Grid () {
     setClickedCell(id);
   }
 
+  useEffect(() => {
+    function deselectCell () {
+      setClickedCell(null)
+    }
+
+    document.body.addEventListener('click', deselectCell)
+    return () => document.body.removeEventListener('click', deselectCell)
+  }, [])
+
   const horizontalCells = 100
   const verticalCells = 100
 
@@ -93,8 +102,8 @@ function Grid () {
     const row = []
     for (let j = 0; j < verticalCells; j++) {
       const id = `${i},${j}`
-      const c = chats?.get(id)
-      if (c) console.log(c)
+      // const c = chats?.get(id)
+      // if (c) console.log(c)
       row.push(
         <Cell
           id={id}

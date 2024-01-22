@@ -19,7 +19,7 @@ interface CellProps {
 const Cell = React.memo(({ id, children, clickedCell, onClick, chat }: CellProps) => {
   const { user } = useAuth()
 
-  if (chat) console.log(chat)
+  // if (chat) console.log(chat)
 
   function bubbleContent () {
     if (!user) {
