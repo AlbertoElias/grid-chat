@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "setup": "npm i && npm run migration:run",
     "build": "npm run codegen && npx tsc",
     "start": "node dist/index.js",
     "dev": "npm run codegen && nodemon",
