@@ -2,9 +2,10 @@ import { useRef, useState, useEffect, MouseEvent } from 'react';
 import Canvas from './Canvas'
 import Cell from './Cell'
 import { useChats } from '../hooks/useChats';
+import { CHAT_ADDED } from '../graphql/queries';
 
 function Grid () {
-  const { chats } = useChats()
+  const { chats, subscribeToMore } = useChats()
   const [clickedCell, setClickedCell] = useState<string | null>(null)
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -91,6 +92,22 @@ function Grid () {
 
     document.body.addEventListener('click', deselectCell)
     return () => document.body.removeEventListener('click', deselectCell)
+  }, [])
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: CHAT_ADDED,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev
+        const newChat = subscriptionData.data.chatAdded
+        console.log(newChat)
+        return Object.assign({}, prev, {
+          chats: [...prev.chats, newChat]
+        })
+      }
+    })
+
+    return () => unsubscribe()
   }, [])
 
   const horizontalCells = 100

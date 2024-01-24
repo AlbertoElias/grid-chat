@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { User } from "./AuthContext";
-import { useMutation, useQuery } from "@apollo/client";
-import { ADD_CHAT, CHAT_ADDED, GET_CHATS } from "../graphql/queries";
+import { useMutation, useQuery, SubscribeToMoreOptions } from "@apollo/client";
+import { ADD_CHAT, GET_CHATS } from "../graphql/queries";
 
 export interface Chat {
   id: string;
@@ -13,6 +13,7 @@ export interface Chat {
 interface ChatsContext {
   chats: Map<string, Chat>;
   addChat: (chat: Chat) => Promise<void>;
+  subscribeToMore: (options: SubscribeToMoreOptions<any, any, any>) => () => void;
 }
 
 export const ChatsContext = createContext<ChatsContext | null>(null);
@@ -31,20 +32,6 @@ export const ChatsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setChats(chatsMap)
   }, [data])
 
-  useEffect(() => {
-    subscribeToMore({
-      document: CHAT_ADDED,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev
-        const newChat = subscriptionData.data.chatAdded
-        console.log(newChat)
-        return Object.assign({}, prev, {
-          chats: [...prev.chats, newChat]
-        })
-      }
-    })
-  }, [])
-
   const storeChat = async (chat: Chat): Promise<void> => {
     return addChat({
       variables: {
@@ -62,7 +49,7 @@ export const ChatsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <ChatsContext.Provider value={{ chats, addChat: storeChat }}>
+    <ChatsContext.Provider value={{ chats, addChat: storeChat, subscribeToMore }}>
       {children}
     </ChatsContext.Provider>
   );
