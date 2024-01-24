@@ -25,12 +25,6 @@ export type Chat = {
   id: Scalars['String']['output'];
 };
 
-export type ChatInput = {
-  author: UserInput;
-  content: Scalars['String']['input'];
-  id: Scalars['String']['input'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   addChat?: Maybe<Chat>;
@@ -73,15 +67,16 @@ export type QueryUserByUsernameArgs = {
   username: Scalars['String']['input'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  chatAdded?: Maybe<Chat>;
+};
+
 export type User = {
   __typename?: 'User';
   chats?: Maybe<Array<Maybe<Chat>>>;
   id: Scalars['ID']['output'];
   username: Scalars['String']['output'];
-};
-
-export type UserInput = {
-  username: Scalars['String']['input'];
 };
 
 
@@ -157,28 +152,26 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Chat: ResolverTypeWrapper<Chat>;
-  ChatInput: ChatInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
-  UserInput: UserInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   Chat: Chat;
-  ChatInput: ChatInput;
   DateTime: Scalars['DateTime']['output'];
   ID: Scalars['ID']['output'];
   Mutation: {};
   Query: {};
   String: Scalars['String']['output'];
+  Subscription: {};
   User: User;
-  UserInput: UserInput;
 };
 
 export type ChatResolvers<ContextType = any, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = {
@@ -206,6 +199,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
 };
 
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  chatAdded?: SubscriptionResolver<Maybe<ResolversTypes['Chat']>, "chatAdded", ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   chats?: Resolver<Maybe<Array<Maybe<ResolversTypes['Chat']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -218,6 +215,7 @@ export type Resolvers<ContextType = any> = {
   DateTime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

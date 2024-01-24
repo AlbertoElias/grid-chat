@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { User } from "./AuthContext";
 import { useMutation, useQuery } from "@apollo/client";
-import { ADD_CHAT, GET_CHATS } from "../graphql/queries";
+import { ADD_CHAT, CHAT_ADDED, GET_CHATS } from "../graphql/queries";
 
 export interface Chat {
   id: string;
@@ -19,7 +19,7 @@ export const ChatsContext = createContext<ChatsContext | null>(null);
 
 export const ChatsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [chats, setChats] = useState(new Map<string, Chat>());
-  const { data } = useQuery(GET_CHATS)
+  const { data, subscribeToMore } = useQuery(GET_CHATS)
   const [addChat] = useMutation(ADD_CHAT)
 
   useEffect(() => {
@@ -31,8 +31,21 @@ export const ChatsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setChats(chatsMap)
   }, [data])
 
+  useEffect(() => {
+    subscribeToMore({
+      document: CHAT_ADDED,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev
+        const newChat = subscriptionData.data.chatAdded
+        console.log(newChat)
+        return Object.assign({}, prev, {
+          chats: [...prev.chats, newChat]
+        })
+      }
+    })
+  }, [])
+
   const storeChat = async (chat: Chat): Promise<void> => {
-    console.log(chat)
     return addChat({
       variables: {
         content: chat.content,

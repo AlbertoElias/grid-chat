@@ -6,10 +6,15 @@ import { ApolloServer } from '@apollo/server'
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
 import { expressMiddleware } from '@apollo/server/express4'
 import { DateTimeResolver } from 'graphql-scalars'
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { PubSub } from 'graphql-subscriptions';
 
 import { Resolvers } from './gen-types'
 import { Chat, User } from './entities/models'
 
+const pubsub = new PubSub();
 const typeDefs = readFileSync('./src/schema.graphql', { encoding: 'utf-8' })
 
 const resolvers: Resolvers = {
@@ -43,6 +48,7 @@ const resolvers: Resolvers = {
           createdAt: new Date()
         })
         await chat.save()
+        pubsub.publish('CHAT_ADDED', { chatAdded: chat })
         return chat
       } catch (error) {
         throw new Error(error)
@@ -60,29 +66,20 @@ const resolvers: Resolvers = {
         throw new Error(error)
       }
     }
-  }
-}
-
-interface MyContext {
-  dataSources?: {
-    // users: Users;
-  }
+  },
+  Subscription: {
+    chatAdded: {
+      subscribe: () => ({
+        [Symbol.asyncIterator]() {
+          return pubsub.asyncIterator(['CHAT_ADDED']);
+        }
+      })
+    }
+  },
 }
 
 export async function setUpServer () {
   const app = express()
-  const httpServer = http.createServer(app)
-
-  const server = new ApolloServer<MyContext>({
-    typeDefs,
-    resolvers,
-    plugins: [
-      // Proper shutdown for the HTTP server.
-      ApolloServerPluginDrainHttpServer({ httpServer })
-    ]
-  })
-  await server.start()
-
   app.use(cors())
   app.use('/', (_, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -92,16 +89,39 @@ export async function setUpServer () {
   })
   app.use(express.urlencoded({ extended: false }))
   app.use(express.json())
+  const httpServer = http.createServer(app)
+
+  const schema = makeExecutableSchema({ typeDefs, resolvers })
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/',
+  });
+
+  const serverCleanup = useServer({ schema }, wsServer)
+
+  const server = new ApolloServer({
+    schema,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ]
+  })
+  await server.start()
   app.use(
     expressMiddleware(server, {
       context: async ({ req }) => ({
         token: req.headers.token,
-        dataSourses: {
-          // users: new Users(await UserModel.createCollection())
-        }
       })
     })
   )
 
-  app.listen({ port: process.env.PORT }, () => console.log(`🚀 Server ready at http://localhost:${process.env.PORT}`))
+  httpServer.listen({ port: process.env.PORT }, () => console.log(`🚀 Server ready at http://localhost:${process.env.PORT}`))
 }

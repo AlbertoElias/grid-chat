@@ -27,12 +27,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .then(res => {
           const resUser = res.data?.userByUsername
           if (resUser) {
-            console.log(resUser)
             setUser({
               username: resUser.username,
               id: resUser.id
             })
-            console.log(user)
           } else {
             localStorage.removeItem('user');
           }
@@ -46,19 +44,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (userData: User): Promise<void> => {
     return getUser({ variables: { username: userData.username } })
       .then(res => {
-        console.log(res.data)
         if (!res.data?.userByUsername) {
           return addUser({ variables: { username: userData.username } })
         }
         return res
       })
       .then(res => {
-        console.log(res)
         setUser({
           username: res.data?.userByUsername.username,
           id: res.data?.userByUsername.id
         });
-        console.log(user)
         localStorage.setItem('user', JSON.stringify(userData))
       })
   };
