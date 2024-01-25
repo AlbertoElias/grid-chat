@@ -39,7 +39,7 @@ function AddChat ({ id }: AddChatProps) {
     >
       <textarea
         id="chat"
-        className="w-full mb-2 p-2 flex-1 resize-none bg-transparent placeholder-slate-700 text-white border-gray-200 rounded-md align-top sm:text-sm focus-within:border-teal-300 focus-within:ring-1 focus-within:ring-teal-300"
+        className="w-full mb-2 p-2 flex-1 resize-none bg-transparent placeholder-gray-200 text-white border-gray-200 rounded-md align-top sm:text-sm focus-within:border-teal-300 focus-within:ring-1 focus-within:ring-teal-300"
         placeholder="Write a message..."
         onChange={handleInputChange}
         ref={textareaRef}
