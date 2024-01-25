@@ -50,12 +50,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return res
       })
       .then(res => {
+        const newUser = {
+          ...(res.data?.userByUsername ||
+          res.data?.addUser)
+        }
+        if (!newUser) throw new Error('Could not log in')
         setUser({
-          username: res.data?.userByUsername.username,
-          id: res.data?.userByUsername.id
+          username: newUser.username,
+          id: newUser.id
         });
         localStorage.setItem('user', JSON.stringify(userData))
       })
+      .catch(err => console.log(err))
   };
 
   const logout = () => {

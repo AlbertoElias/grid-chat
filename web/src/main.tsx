@@ -9,10 +9,10 @@ import './index.css'
 import { getMainDefinition } from '@apollo/client/utilities';
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:3000/'
+  uri: import.meta.env.VITE_SERVER_HOST
 });
 const wsLink = new GraphQLWsLink(createClient({
-  url: 'ws://localhost:3000/',
+  url: import.meta.env.VITE_WS_HOST,
 }));
 
 const splitLink = split(
