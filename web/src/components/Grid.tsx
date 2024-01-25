@@ -1,4 +1,5 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback, memo } from 'react';
+import { FixedSizeGrid } from 'react-window'
 import Canvas from './Canvas'
 import Cell from './Cell'
 import { useChats } from '../hooks/useChats';
@@ -7,57 +8,48 @@ import { useMouseDrag } from '../hooks/useMouseDrag';
 
 const Grid = () => {
   const gridWrapperRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const { handleDragStart, handleDragEnd, handleDrag } = useMouseDrag(gridWrapperRef);
   const { chats, subscribeToMore } = useChats()
   const [clickedCell, setClickedCell] = useState<string | null>(null)
-  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [gridSize, setGridSize] = useState({ width: 0, height: 0 });
 
-  console.log('Grid render', clickedCell, chats, canvasSize) 
+  console.log('Grid render', clickedCell, chats, gridSize) 
   
   useEffect(() => {
-    const updateCanvasSize = () => {
-      if (gridRef.current) {
-        setCanvasSize({
-          width: gridRef.current.offsetWidth,
-          height: gridRef.current.offsetHeight
-        })
+    const updateGridSize = () => {
+      if (gridWrapperRef.current) {
+        setGridSize({
+          width: gridWrapperRef.current.offsetWidth,
+          height: gridWrapperRef.current.offsetHeight
+        });
       }
-    }
-
-    window.addEventListener('resize', updateCanvasSize);
-    updateCanvasSize();
-
-    return () => window.removeEventListener('resize', updateCanvasSize);
-  }, []);
-  useEffect(() => {
-    const adjustScrollPosition = () => {
-      if (!gridWrapperRef.current || !gridRef.current) return;
-  
-      const gridWrapper = gridWrapperRef.current;
-      const grid = gridRef.current;
-  
-      const gridMiddleX = grid.offsetWidth / 2;
-      const gridMiddleY = grid.offsetHeight / 2;
-      const wrapperMiddleX = gridWrapper.offsetWidth / 2;
-      const wrapperMiddleY = gridWrapper.offsetHeight / 2;
-  
-      gridWrapper.scrollLeft = gridMiddleX - wrapperMiddleX;
-      gridWrapper.scrollTop = gridMiddleY - wrapperMiddleY;
     };
-  
-    // Set a timeout to delay execution so that the grid has time to render and the correct width
-    const timeout = setTimeout(adjustScrollPosition, 0);
-  
-    return () => clearTimeout(timeout);
-  }, [])
 
-  const cellClickHandler = useCallback((id: string) => {
-    setClickedCell(id);
-  }, [])
+    window.addEventListener('resize', updateGridSize);
+    updateGridSize();
+
+    return () => window.removeEventListener('resize', updateGridSize);
+  }, []);
+  // useEffect(() => {
+  //   const adjustScrollPosition = () => {
+  //     if (!gridWrapperRef.current) return;
+  
+  //     const gridWrapper = gridWrapperRef.current;
+  
+  //     const wrapperMiddleX = gridWrapper.offsetWidth / 2;
+  //     const wrapperMiddleY = gridWrapper.offsetHeight / 2;
+  
+  //     gridWrapper.scrollLeft = wrapperMiddleX;
+  //     gridWrapper.scrollTop = wrapperMiddleY;
+  //   };
+  
+  //   // Set a timeout to delay execution so that the grid has time to render and the correct width
+  //   const timeout = setTimeout(adjustScrollPosition, 0);
+  
+  //   return () => clearTimeout(timeout);
+  // }, [])
   useEffect(() => {
-    function deselectCell (ev: MouseEvent) {
-      ev.stopPropagation()
+    function deselectCell () {
       setClickedCell(null)
     }
 
@@ -82,31 +74,43 @@ const Grid = () => {
 
   const horizontalCells = 100
   const verticalCells = 100
+  const cellSize = 32
 
-  const rows = []
+  const CellRenderer = memo(({ columnIndex, rowIndex, style }: { columnIndex: number, rowIndex: number, style: React.CSSProperties }) => {
+    const id = `${rowIndex},${columnIndex}`;
 
-  for (let i = 0; i < horizontalCells; i++) {
-    const row = []
-    for (let j = 0; j < verticalCells; j++) {
-      const id = `${i},${j}`
-      row.push(
-        <Cell
-          id={id}
-          key={id}
-          onClick={cellClickHandler}
-          clickedCell={clickedCell === id}
-          chat={chats?.get(id)}
-        ></Cell>
-      )
-    }
-    rows.push(<div className='flex' key={`row-${i}`}>{row}</div>)
-  }
+    const handleClick = useCallback(() => {
+      console.log(id)
+      setClickedCell(id);
+    }, []);
+  
+    return (
+      <Cell
+        id={id}
+        style={style}
+        onClick={handleClick}
+        clickedCell={clickedCell === id}
+        chat={chats?.get(id)}
+      />
+    );
+  });
 
   return (
     <div className='p-4 flex-1 flex justify-center overflow-hidden'>
-      <div className='relative overflow-scroll no-scrollbar h-full' ref={gridWrapperRef} onMouseDown={handleDragStart} onMouseUp={handleDragEnd} onMouseMove={handleDrag}>
-        <div className='flex flex-col absolute' ref={gridRef}>{rows}</div>
-        <Canvas width={canvasSize.width} height={canvasSize.height} />
+      <div className='relative h-full w-full' ref={gridWrapperRef} onMouseDown={handleDragStart} onMouseUp={handleDragEnd} onMouseMove={handleDrag}>
+        <FixedSizeGrid
+          columnCount={horizontalCells}
+          columnWidth={cellSize}
+          height={gridSize.height}
+          rowCount={verticalCells}
+          rowHeight={cellSize}
+          width={gridSize.width}
+          className='flex flex-col no-scrollbar'
+          style={{ position: 'absolute' }}
+        >
+          {CellRenderer}
+        </FixedSizeGrid>
+        <Canvas width={gridSize.width} height={gridSize.height} />
       </div>
     </div>
   )

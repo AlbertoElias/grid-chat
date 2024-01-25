@@ -17,12 +17,9 @@ export const useMouseDrag = (elRef: React.RefObject<HTMLElement>) => {
     const scrollTop = slider.scrollTop;
     mouseCoords.current = { startX, startY, scrollLeft, scrollTop }
     setIsMouseDown(true)
-    elRef.current.style.cursor = "grabbing !important"
   }, [])
   const handleDragEnd = useCallback(() => {
       setIsMouseDown(false)
-      if (!elRef.current) return
-      document.body.style.cursor = "default"
   }, [])
   const handleDrag = useCallback((e: MouseEvent) => {
       if (!isMouseDown || !elRef.current) return;

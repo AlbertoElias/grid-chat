@@ -9,13 +9,14 @@ import { Chat } from "../context/ChatsContext";
 
 interface CellProps {
   id: string;
+  style: React.CSSProperties;
   children?: React.ReactNode;
   clickedCell?: boolean;
-  onClick: (id: string) => void;
+  onClick: () => void;
   chat?: Chat
 }
 
-const Cell = React.memo(({ id, children, clickedCell, onClick, chat }: CellProps) => {
+const Cell = React.memo(({ id, style, children, clickedCell, onClick, chat }: CellProps) => {
   const { user } = useAuth()
 
   function bubbleContent () {
@@ -28,17 +29,12 @@ const Cell = React.memo(({ id, children, clickedCell, onClick, chat }: CellProps
     }
   }
 
-  function clickHandler (ev: React.MouseEvent<HTMLDivElement>) {
-    ev.stopPropagation()
-    console.log('click')
-    onClick(id)
-  }
-
   return (
     <div
       key={id}
       className='relative flex items-center justify-center w-8 h-8 border border-solid cursor-pointer'
-      onClick={clickHandler}
+      onClick={onClick}
+      style={style}
     >
       {clickedCell ?
         <Bubble>
