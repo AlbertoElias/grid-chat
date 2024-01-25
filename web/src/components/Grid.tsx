@@ -1,49 +1,18 @@
-import { useRef, useState, useEffect, MouseEvent } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import Canvas from './Canvas'
 import Cell from './Cell'
 import { useChats } from '../hooks/useChats';
 import { CHAT_ADDED } from '../graphql/queries';
+import { useMouseDrag } from '../hooks/useMouseDrag';
 
-function Grid () {
+const Grid = () => {
   const { chats, subscribeToMore } = useChats()
   const [clickedCell, setClickedCell] = useState<string | null>(null)
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const { handleDragStart, handleDragEnd, handleDrag } = useMouseDrag(gridWrapperRef);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-  const [isMouseDown, setIsMouseDown] = useState(false);
-  const mouseCoords = useRef({
-      startX: 0,
-      startY: 0,
-      scrollLeft: 0,
-      scrollTop: 0
-  });
-  const handleDragStart = (e: MouseEvent) => {
-    if (!gridWrapperRef.current) return
-    const slider = gridWrapperRef.current;
-    const startX = e.pageX - slider.offsetLeft;
-    const startY = e.pageY - slider.offsetTop;
-    const scrollLeft = slider.scrollLeft;
-    const scrollTop = slider.scrollTop;
-    mouseCoords.current = { startX, startY, scrollLeft, scrollTop }
-    setIsMouseDown(true)
-    document.body.style.cursor = "grabbing"
-  }
-  const handleDragEnd = () => {
-      setIsMouseDown(false)
-      if (!gridWrapperRef.current) return
-      document.body.style.cursor = "default"
-  }
-  const handleDrag = (e: MouseEvent) => {
-      if (!isMouseDown || ! gridWrapperRef.current) return;
-      e.preventDefault();
-      const slider = gridWrapperRef.current;
-      const x = e.pageX - slider.offsetLeft;
-      const y = e.pageY - slider.offsetTop;
-      const walkX = (x - mouseCoords.current.startX) * 1.5;
-      const walkY = (y - mouseCoords.current.startY) * 1.5;
-      slider.scrollLeft = mouseCoords.current.scrollLeft - walkX;
-      slider.scrollTop = mouseCoords.current.scrollTop - walkY;
-  }
+  
   useEffect(() => {
     const updateCanvasSize = () => {
       if (gridRef.current) {
@@ -61,6 +30,7 @@ function Grid () {
   }, []);
   useEffect(() => {
     const adjustScrollPosition = () => {
+      console.log('rerendering')
       if (!gridWrapperRef.current || !gridRef.current) return;
   
       const gridWrapper = gridWrapperRef.current;
@@ -81,12 +51,12 @@ function Grid () {
     return () => clearTimeout(timeout);
   }, [])
 
-  function cellClickHandler (id: string) {
+  const cellClickHandler = useCallback((id: string) => {
     setClickedCell(id);
-  }
-
+  }, [])
   useEffect(() => {
-    function deselectCell () {
+    function deselectCell (ev: MouseEvent) {
+      ev.stopPropagation()
       setClickedCell(null)
     }
 
@@ -100,7 +70,6 @@ function Grid () {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev
         const newChat = subscriptionData.data.chatAdded
-        console.log(newChat)
         return Object.assign({}, prev, {
           chats: [...prev.chats, newChat]
         })
@@ -109,6 +78,8 @@ function Grid () {
 
     return () => unsubscribe()
   }, [])
+
+  // console.log('Grid render', clickedCell, chats, canvasSize)
 
   const horizontalCells = 100
   const verticalCells = 100
@@ -119,8 +90,6 @@ function Grid () {
     const row = []
     for (let j = 0; j < verticalCells; j++) {
       const id = `${i},${j}`
-      // const c = chats?.get(id)
-      // if (c) console.log(c)
       row.push(
         <Cell
           id={id}

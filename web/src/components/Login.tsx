@@ -7,6 +7,7 @@ const Login = () => {
   const [inputValue, setInputValue] = useState<string>('')
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation()
     setInputValue(event.target.value);
   }
 

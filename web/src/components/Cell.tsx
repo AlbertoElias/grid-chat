@@ -1,4 +1,3 @@
-
 import React from "react";
 import cn from 'classnames'
 
@@ -20,6 +19,7 @@ const Cell = React.memo(({ id, children, clickedCell, onClick, chat }: CellProps
   const { user } = useAuth()
 
   // if (chat) console.log(chat)
+  if (id === '0,0') console.log('Cell render', id, user, clickedCell, chat);
 
   function bubbleContent () {
     if (!user) {
@@ -33,6 +33,7 @@ const Cell = React.memo(({ id, children, clickedCell, onClick, chat }: CellProps
 
   function clickHandler (ev: React.MouseEvent<HTMLDivElement>) {
     ev.stopPropagation()
+    console.log('click')
     onClick(id)
   }
 
