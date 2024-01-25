@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, MouseEvent } from "react";
 
 export const useMouseDrag = (elRef: React.RefObject<HTMLElement>) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -35,7 +35,6 @@ export const useMouseDrag = (elRef: React.RefObject<HTMLElement>) => {
       slider.scrollLeft = mouseCoords.current.scrollLeft - walkX;
       slider.scrollTop = mouseCoords.current.scrollTop - walkY;
   }, [isMouseDown])
-
 
   return {
     handleDragStart,

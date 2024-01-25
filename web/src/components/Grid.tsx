@@ -6,12 +6,14 @@ import { CHAT_ADDED } from '../graphql/queries';
 import { useMouseDrag } from '../hooks/useMouseDrag';
 
 const Grid = () => {
-  const { chats, subscribeToMore } = useChats()
-  const [clickedCell, setClickedCell] = useState<string | null>(null)
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const { handleDragStart, handleDragEnd, handleDrag } = useMouseDrag(gridWrapperRef);
+  const { chats, subscribeToMore } = useChats()
+  const [clickedCell, setClickedCell] = useState<string | null>(null)
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+
+  console.log('Grid render', clickedCell, chats, canvasSize) 
   
   useEffect(() => {
     const updateCanvasSize = () => {
@@ -30,7 +32,6 @@ const Grid = () => {
   }, []);
   useEffect(() => {
     const adjustScrollPosition = () => {
-      console.log('rerendering')
       if (!gridWrapperRef.current || !gridRef.current) return;
   
       const gridWrapper = gridWrapperRef.current;
@@ -78,8 +79,6 @@ const Grid = () => {
 
     return () => unsubscribe()
   }, [])
-
-  // console.log('Grid render', clickedCell, chats, canvasSize)
 
   const horizontalCells = 100
   const verticalCells = 100
